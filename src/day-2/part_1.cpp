@@ -1,4 +1,5 @@
 #include "../common/file_utils.hpp"
+#include "preprocessing.hpp"
 
 #include <iostream>
 #include <unordered_map>
@@ -24,12 +25,10 @@ int main()
 
     for (const auto &line : file_res.value())
     {
-        std::vector<std::string> split_line = common::split_string_by_space(line);
-        // Adding a ; to the end of the list for ease in data processing.
-        split_line.back().push_back(';');
-
+        const std::vector<std::string> game_input = preprocessing::preprocess_game_input(line);
+        
         // The first entry is "Game", 2nd is game_id, 3rd is :.
-        const int game_id = std::stoi(split_line[1]);
+        const int game_id = std::stoi(game_input[1]);
 
         // Now, the sets are split by ';'. The number of a certain color is present before
         // the color name. Ex : 3 green.
@@ -39,23 +38,20 @@ int main()
         bool possible_game = true;
         int set_number = 1;
 
-        for (int k = 2; k < split_line.size(); k++)
+        for (int k = 2; k < game_input.size(); k++)
         {
-            if (split_line[k] == ";" || split_line[k].back() == ';')
+            if (game_input[k] == ";")
             {
-                // First add to the feq map. This is required because if string is red;, we have to add 
-                // red cube information as well.
-                auto color = split_line[k];
-                color.pop_back();
+                #if 0
+                std::cout << "SET : " << set_number++ << '\n';
+                #endif
 
-                freq_map[color] = std::stoi(split_line[k - 1]);
-
-                // std::cout << "SET : " << set_number++ << '\n';
-
-                // for (const auto &[color, count] : freq_map)
-                // {
-                //     std::cout << color << " -> " << count << '\n';
-                // }
+                #if 0
+                for (const auto &[color, count] : freq_map)
+                {
+                    std::cout << color << " -> " << count << '\n';
+                }
+                #endif
 
                 // If the code reaches here, then the set is over.
                 // Perform the count check here and at the end reset counters to 0.
@@ -71,16 +67,12 @@ int main()
             }
             else
             {
-                // The current input will either be a color_comma, number, or color.
-                if (split_line[k].back() == ',')
-                {
-                    split_line[k].pop_back();
-                }
+                // The current input will either be a number or color.
 
                 // If the code reaches here, it is for sure that its either a number of color.
-                if (split_line[k] == "red" || split_line[k] == "green" || split_line[k] == "blue")
+                if (game_input[k] == "red" || game_input[k] == "green" || game_input[k] == "blue")
                 {
-                    freq_map[split_line[k]] = std::stoi(split_line[k - 1]);
+                    freq_map[game_input[k]] = std::stoi(game_input[k - 1]);
                 }
             }
         }
