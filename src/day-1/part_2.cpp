@@ -8,7 +8,7 @@ using namespace std::string_literals;
 
 int main()
 {
-    const auto file_result = common::read_file("input.txt");
+    const auto file_result = common::read_file_by_word("input.txt");
     if (!file_result.has_value())
     {
         return EXIT_FAILURE;
