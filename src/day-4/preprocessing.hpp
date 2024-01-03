@@ -30,7 +30,7 @@ namespace preprocessing
 
     struct CardData
     {
-        int game_id{};
+        int card_id{};
         std::vector<int> winning_numbers{};
         std::vector<int> card_numbers{};
     };
@@ -46,9 +46,9 @@ namespace preprocessing
 
             // Example input : Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
             CardData data = {};
-            auto game_id = line_split_by_space.at(1);
-            game_id.pop_back();
-            data.game_id = stoi(game_id);
+            auto card_id = line_split_by_space.at(1);
+            card_id.pop_back();
+            data.card_id = stoi(card_id);
 
             // card_divider_found is set to true when a | is encountered.
             bool card_divider_found{false};
