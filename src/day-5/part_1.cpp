@@ -12,7 +12,7 @@ seed-to-soil map:
 // Naive solution : Basically construct a bunch of range_map's, and go through each of the 
 // hash maps in the following way.
 // Say initial seed is X.
-// soln_for_seed = [X, seed_soil_map[X], some_other_map[seed_soil_map[X]])] last element.
+// soln_for_seed = last element of [X, seed_soil_map[X], some_other_map[seed_soil_map[X]])].
 // The final sol = min of all soln_for_seeds.
 
 #include "../common/file_utils.hpp"
@@ -36,7 +36,7 @@ int main()
         return EXIT_FAILURE;
     }
 
-    // For the sake of simplicity, I wont even bother storing the names of the hash maps like seed to soil, etc.
+    // For the sake of simplicity, I wont even bother storing the names of the range maps like seed to soil, etc.
     // Whenever a new map segment occurs, I'll just add the ranges to a new element in the output most vector.
     std::vector<std::vector<RangeMap>> range_maps{};
     std::vector<long long> seeds{};
@@ -82,13 +82,10 @@ int main()
     {
         size_t seed_location = seed;
 
-        std::cout << seed << "\t";
         for (const auto& map : range_maps)
         {
             for (const auto& range : map)
             {
-                //std::cout << "Range : " << range.source_start << " " << range.source_start + range.range_size << "\n";
-
                  if (seed_location >= range.source_start && seed_location <= range.source_start + range.range_size)
                  {
                     seed_location = range.destination_start + (seed_location - range.source_start);
@@ -96,10 +93,9 @@ int main()
                  }
                  else
                  {
-                    // Seed location is unchanged.
+                    // Seed location is unchanged (i. identity mapping).
                  }
             }
-            std::cout << seed_location << "\t";
         }    
 
         std::cout << "Seed " << seed << " -> " << seed_location << '\n';
