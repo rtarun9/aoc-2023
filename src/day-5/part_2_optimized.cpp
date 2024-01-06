@@ -27,7 +27,7 @@ int main()
 
     {
         const auto seed_info = common::split_string_by_space(input[0]);
-        for (size_t i = 1; i < seed_info.size(); i += 2)
+        for (size_t i = 1; i < seed_info.size(); i += 2) 
         {
             seed_ranges.push_back(
                 std::make_pair<long long, long long>(
@@ -48,7 +48,7 @@ int main()
             range_maps.back().emplace_back(RangeMap{
                 .destination_start = destination_start,
                 .source_start = source_start,
-                .range_size = range_size,
+                .range_size = range_size - 1,
             });
         }
         else if (!split_input.empty() && split_input.back() == "map:")
@@ -71,22 +71,22 @@ int main()
             {
                 const auto overlapping_region = std::pair{
                     std::max(top.first, m.source_start),
-                    std::min(top.second, m.source_start + m.range_size - 1)};
+                    std::min(top.second, m.source_start + m.range_size)};
 
                 if (overlapping_region.first <= overlapping_region.second)
                 {
                     if (top.first < overlapping_region.first)
                     {
-                        new_range_maps.emplace_back(std::pair{top.first, overlapping_region.first - 1});
+                        seed_ranges.emplace_back(std::pair{top.first, overlapping_region.first - 1});
                     }
 
                     new_range_maps.push_back({
-                        overlapping_region.first - m.source_start + m.destination_start - 1,
-                        overlapping_region.second - m.source_start + m.destination_start - 1});
+                        overlapping_region.first - m.source_start + m.destination_start,
+                        overlapping_region.second - m.source_start + m.destination_start});
 
                     if (top.second > overlapping_region.second)
                     {
-                        new_range_maps.push_back({overlapping_region.second + 1, top.second});
+                        seed_ranges.push_back({overlapping_region.second + 1, top.second});
                     }
 
                     overlap_found = true;
@@ -104,7 +104,7 @@ int main()
     }
 
     std::for_each(std::begin(seed_ranges), std::end(seed_ranges), [&](const auto& p) {std::cout << p.first << ", " << p.second << '\n';});
-    
+
     std::cout << "Result :: " << std::min_element(seed_ranges.begin(), seed_ranges.end())->first << "\n";
 
     return EXIT_SUCCESS;
