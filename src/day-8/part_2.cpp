@@ -1,9 +1,14 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <numeric>
 
 #include "../common/file_utils.hpp"
 
+// For part 2, we need to find steps such that all the nodes ending with A will end up at nodes ending with Z.
+// As cycles are present, you cant do all the processing simultaneously.
+// A better approach would be to find number of steps required by each node that ends with A (i.e your starting point),
+// and then take a LCM of them. The LCM would be the final results.
 int main()
 {
     const auto file_res = common::read_file_by_line("input.txt");
@@ -30,7 +35,6 @@ int main()
         nodes[source] = std::vector{left, right};
     }
 
-    int steps = 0;
     std::vector<std::string> current = {};
     for (const auto& [key, value] : nodes)
     {
@@ -40,45 +44,40 @@ int main()
         }
     }
 
-    const auto reached_all_zs = [&](const auto& current)
+    const auto steps_to_reach_z = [&](const auto start_point ) -> uint64_t
     {
-        for (const auto& c : current)
-        {
-            if (c.back() != 'Z')
-            {
-                return false;
-            }
-        }
+        uint64_t steps = 0;
 
-        return true;
+        auto c = start_point; 
+        while (c.back() != 'Z')
+        {
+            char move_direction = instructions.at(steps % (instructions.size()));
+            if (move_direction == 'L')
+            {
+                c = nodes[c][0];
+            }
+            else
+            {
+                c = nodes[c][1];
+            }
+
+            ++steps;
+        }
+        std::cout << "Steps :: " << steps << std::endl;
+
+        return steps;
     };
 
-    while (!reached_all_zs(current))
+    std::vector<uint64_t> steps_to_reach_z_for_all_start_points{};
+    for (const auto& start : current)
     {
-        char move_direction = instructions.at(steps % (instructions.size()));
-        if (move_direction == 'L')
-        {
-            const auto dup = current;
-            current.clear();
+        steps_to_reach_z_for_all_start_points.emplace_back(steps_to_reach_z(start));
+    }
 
-            for (const auto& c : dup)
-            {
-                current.emplace_back(nodes[c][0]);
-            }
-        }
-        else
-        {
-
-            const auto dup = current;
-            current.clear();
-
-            for (const auto& c : dup)
-            {
-                current.emplace_back(nodes[c][1]);
-            }
-        }
-
-        ++steps; 
+    uint64_t steps = 1;
+    for (const auto& s : steps_to_reach_z_for_all_start_points)
+    {
+        steps = std::lcm(steps, s);
     }
 
     std::cout << "Steps :: " << steps << std::endl;
