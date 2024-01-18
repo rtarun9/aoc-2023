@@ -1,7 +1,7 @@
-#include <iostream>
-#include <unordered_map>
-#include <queue>
 #include <array>
+#include <iostream>
+#include <queue>
+#include <unordered_map>
 
 #include "../common/file_utils.hpp"
 
@@ -63,16 +63,15 @@ int main()
     pipe_end_map['7'] = std::array{down, left};
     pipe_end_map['F'] = std::array{down, right};
 
-    const auto has_end = [&](const auto current_input, const auto direction)
-    {
-        if (pipe_end_map[current_input][0] == direction || pipe_end_map[current_input][1] == direction || current_input == 'S') return true;
+    const auto has_end = [&](const auto current_input, const auto direction) {
+        if (pipe_end_map[current_input][0] == direction || pipe_end_map[current_input][1] == direction ||
+            current_input == 'S')
+            return true;
 
         return false;
     };
 
-    const auto is_move_possible = [&](const auto i, const auto j)
-    {
-
+    const auto is_move_possible = [&](const auto i, const auto j) {
         const auto right_move = has_end(input[i][j], right) && has_end(input[i][j + 1], left);
         const auto left_move = has_end(input[i][j], left) && has_end(input[i][j - 1], right);
         const auto up_move = has_end(input[i][j], up) && has_end(input[i - 1][j], down);
@@ -84,7 +83,7 @@ int main()
     // 1 -> unvisited location.
     // bfs queue has the elements : steps to reach parent, current cell x and y.
     std::vector<std::vector<int>> step_map(input.size(), std::vector<int>(input.at(0).size(), -1));
-    std::queue<std::array<int ,3>> bfs_queue{};
+    std::queue<std::array<int, 3>> bfs_queue{};
 
     // The logic is simple : Start from S, and do a bfs.
     for (int i = 0; i < input.size(); i++)
@@ -103,7 +102,7 @@ int main()
         const auto top = bfs_queue.front();
         bfs_queue.pop();
 
-        const auto& [steps_to_reach_parent, curr_y, curr_x] = top;
+        const auto &[steps_to_reach_parent, curr_y, curr_x] = top;
 
         // Add the neighbouring cells to the queue.
         const auto directions = pipe_end_map[input[curr_y][curr_x]];
@@ -135,10 +134,14 @@ int main()
         // Check neighboring cells and add to queue accordingly.
         const auto move_possiblities = is_move_possible(curr_y, curr_x);
 
-        if (move_possiblities[0]) bfs_queue.push({steps_to_reach_current, curr_y, curr_x - 1});
-        if (move_possiblities[1]) bfs_queue.push({steps_to_reach_current, curr_y - 1, curr_x});
-        if (move_possiblities[2]) bfs_queue.push({steps_to_reach_current, curr_y, curr_x + 1});
-        if (move_possiblities[3]) bfs_queue.push({steps_to_reach_current, curr_y + 1, curr_x});
+        if (move_possiblities[0])
+            bfs_queue.push({steps_to_reach_current, curr_y, curr_x - 1});
+        if (move_possiblities[1])
+            bfs_queue.push({steps_to_reach_current, curr_y - 1, curr_x});
+        if (move_possiblities[2])
+            bfs_queue.push({steps_to_reach_current, curr_y, curr_x + 1});
+        if (move_possiblities[3])
+            bfs_queue.push({steps_to_reach_current, curr_y + 1, curr_x});
     }
 
     int result = 0;
@@ -147,9 +150,10 @@ int main()
     {
         for (int j = 0; j < step_map.size(); j++)
         {
-            if (step_map[i][j] == -1) std::cout << '.';
+            if (step_map[i][j] == -1)
+                std::cout << '.';
             else
-            std::cout << step_map[i][j];
+                std::cout << step_map[i][j];
 
             result = std::max(result, step_map[i][j]);
         }
